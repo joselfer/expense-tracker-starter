@@ -17,16 +17,21 @@ npm run preview  # preview production build
 
 ## Architecture
 
-Single-file React app (`src/App.jsx`) — all state, logic, and UI live there. No routing, no context, no external state library.
+React app split across four components. No routing, no context, no external state library.
 
-**State:** `transactions` array is the source of truth. Each transaction has `{ id, description, amount, type, category, date }`. `amount` is stored as a string (this is an intentional bug in the starter — fix by parsing to `Number` before arithmetic).
+**`src/App.jsx`** — root component. Owns `transactions` array (the single source of truth) and passes it down. Handles adding new transactions via `handleAdd` callback.
 
-**Derived values:** `totalIncome`, `totalExpenses`, and `balance` are computed inline from `transactions` on every render. `filteredTransactions` applies `filterType` and `filterCategory` on top.
+**`src/Summary.jsx`** — receives `transactions`, computes `totalIncome`, `totalExpenses`, and `balance` internally, renders the three summary cards.
+
+**`src/TransactionForm.jsx`** — owns all form state (`description`, `amount`, `type`, `category`). Calls `onAdd(transaction)` prop on submit and resets its own state.
+
+**`src/TransactionList.jsx`** — receives `transactions`, owns `filterType` and `filterCategory` state, renders the filtered table.
+
+**State:** each transaction has `{ id, description, amount, type, category, date }`. `amount` is a `Number`.
 
 **Styling:** flat CSS in `src/App.css`. Color classes `.income-amount` and `.expense-amount` are reused on both summary cards and table rows.
 
 ## Known intentional issues (course starting point)
 
-- `amount` stored as a string causes broken arithmetic in totals (string concatenation instead of addition).
 - Transaction #4 ("Freelance Work") is typed as `"expense"` but categorized as `"salary"` — likely meant to be income.
 - UI is intentionally minimal/unstyled as a starting point for the course.
