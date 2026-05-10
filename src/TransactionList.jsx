@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import ConfirmModal from './ConfirmModal'
 
 const categories = ["food", "housing", "utilities", "transport", "entertainment", "salary", "other"];
 
-function TransactionList({ transactions }) {
+function TransactionList({ transactions, onDelete }) {
   const [filterType, setFilterType] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   let filtered = transactions;
   if (filterType !== "all") {
@@ -13,6 +15,11 @@ function TransactionList({ transactions }) {
   if (filterCategory !== "all") {
     filtered = filtered.filter(t => t.category === filterCategory);
   }
+
+  const handleConfirmDelete = () => {
+    onDelete(pendingDeleteId);
+    setPendingDeleteId(null);
+  };
 
   return (
     <div className="transactions">
@@ -38,6 +45,7 @@ function TransactionList({ transactions }) {
             <th>Description</th>
             <th>Category</th>
             <th>Amount</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -49,10 +57,20 @@ function TransactionList({ transactions }) {
               <td className={t.type === "income" ? "income-amount" : "expense-amount"}>
                 {t.type === "income" ? "+" : "-"}${t.amount}
               </td>
+              <td>
+                <button className="delete-btn" onClick={() => setPendingDeleteId(t.id)}>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {pendingDeleteId !== null && (
+        <ConfirmModal
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </div>
   );
 }
